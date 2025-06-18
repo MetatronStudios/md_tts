@@ -1,18 +1,22 @@
 import vue from 'eslint-plugin-vue';
+import vueParser from 'vue-eslint-parser';
 
 export default [
   {
-    files: ['**/*.js', '**/*.vue'],
+    files: ['**/*.vue', '**/*.js'],
     ignores: ['node_modules'],
     languageOptions: {
+      parser: vueParser,
       parserOptions: {
         ecmaVersion: 'latest',
-        sourceType: 'module'
-      }
+        sourceType: 'module',
+      },
     },
     plugins: {
-      vue
+      vue,
     },
-    rules: {}
-  }
+    rules: {
+      ...vue.configs['flat/essential'].rules,
+    },
+  },
 ];
