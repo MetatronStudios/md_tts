@@ -10,7 +10,9 @@ from typing import Dict, List
 class PiperWrapper:
     """Manage a Piper TTS subprocess."""
 
-    def __init__(self, executable: str = "piper", voice: str | None = None) -> None:
+    def __init__(
+        self, executable: str = "piper", voice: str | None = None
+    ) -> None:  # noqa: E501
         cmd = [executable]
         if voice:
             cmd.extend(["--voice", voice])
@@ -39,14 +41,18 @@ class PiperWrapper:
             out_wav = Path(tmpdir) / "output.wav"
             timings_path = Path(tmpdir) / "timings.json"
 
-            request = json.dumps({"text": text, "output_path": str(out_wav)})
+            request = json.dumps(
+                {"text": text, "output_path": str(out_wav)}
+            )  # noqa: E501
             self.process.stdin.write(request + "\n")
             self.process.stdin.flush()
 
             # Read response JSON from Piper
             response_line = self.process.stdout.readline()
             if not response_line:
-                stderr = self.process.stderr.read() if self.process.stderr else ""
+                stderr = (
+                    self.process.stderr.read() if self.process.stderr else ""
+                )  # noqa: E501
                 raise RuntimeError(f"Piper failed: {stderr}")
             resp = json.loads(response_line)
 
@@ -61,11 +67,17 @@ class PiperWrapper:
                 start = 0.0
                 for word in text.split():
                     timings.append(
-                        {"word": word, "startTime": start, "endTime": start + 0.2}
+                        {
+                            "word": word,
+                            "startTime": start,
+                            "endTime": start + 0.2,
+                        }  # noqa: E501
                     )
                     start += 0.2
 
-            audio_b64 = base64.b64encode(out_wav.read_bytes()).decode("ascii")
+            audio_b64 = base64.b64encode(out_wav.read_bytes()).decode(
+                "ascii"
+            )  # noqa: E501
 
         return {
             "audioContent": audio_b64,
@@ -79,7 +91,9 @@ class PiperWrapper:
         timings: List[Dict[str, float]] = []
         start = 0.0
         for word in words:
-            timings.append({"word": word, "startTime": start, "endTime": start + 0.2})
+            timings.append(
+                {"word": word, "startTime": start, "endTime": start + 0.2}
+            )  # noqa: E501
             start += 0.2
         # create 1 second of silence as WAV
         with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
@@ -90,8 +104,14 @@ class PiperWrapper:
                 b"\x64\x61\x74\x61\x00\x00\x00\x00"
             )
             tmp.flush()
-            audio = base64.b64encode(Path(tmp.name).read_bytes()).decode("ascii")
-        return {"audioContent": audio, "mimeType": "audio/wav", "timings": timings}
+            audio = base64.b64encode(Path(tmp.name).read_bytes()).decode(
+                "ascii"
+            )  # noqa: E501
+        return {
+            "audioContent": audio,
+            "mimeType": "audio/wav",
+            "timings": timings,
+        }  # noqa: E501
 
     def terminate(self) -> None:
         if self.process.poll() is None:

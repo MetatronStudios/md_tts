@@ -1,5 +1,7 @@
 import { ref, shallowRef } from 'vue';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 const rawMarkdown = ref('');
 const renderedContent = shallowRef('');
 const currentLineId = ref(null);
@@ -40,7 +42,7 @@ function play() {
 }
 
 async function fetchAudioAndPlay(text, offset = 0) {
-  const resp = await fetch('/api/tts', {
+  const resp = await fetch(`${API_BASE}/tts`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text }),
