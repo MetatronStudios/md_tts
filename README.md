@@ -29,6 +29,7 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
    ```bash
    flask --app app run
    ```
+   The backend uses `flask-cors` to allow requests from the frontend during development.
 
 Both servers will run locally and communicate via HTTP APIs.
 
