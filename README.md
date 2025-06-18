@@ -5,6 +5,7 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
 ## Development Setup
 
 ### Frontend
+
 1. Install dependencies:
    ```bash
    cd frontend
@@ -16,6 +17,7 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
    ```
 
 ### Backend
+
 1. Create and activate a Python virtual environment:
    ```bash
    cd backend
@@ -29,3 +31,23 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
    ```
 
 Both servers will run locally and communicate via HTTP APIs.
+
+## Testing
+
+### Frontend
+
+Run unit tests with Vitest:
+
+```bash
+cd frontend
+npm test
+```
+
+### Backend
+
+Execute Python tests with pytest:
+
+```bash
+cd backend
+pytest
+```
