@@ -32,6 +32,18 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
 
 Both servers will run locally and communicate via HTTP APIs.
 
+### Environment Variables
+
+The frontend expects an environment variable `VITE_API_URL` pointing to the back-end API.
+Create the following files under `frontend/`:
+
+```bash
+echo "VITE_API_URL=http://localhost:5000/api" > frontend/.env.development
+echo "VITE_API_URL=/api" > frontend/.env.production
+```
+
+Vite will use the appropriate file based on the build mode.
+
 ## Testing
 
 ### Frontend
