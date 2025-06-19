@@ -10,6 +10,7 @@ const audio = shallowRef(null);
 const timings = shallowRef([]);
 const isPlaying = ref(false);
 const wordOffset = ref(0);
+let highlightTimeouts = [];
 
 function clearHighlight() {
   currentLineId.value = null;
@@ -22,22 +23,33 @@ function stop() {
     audio.value.currentTime = 0;
   }
   isPlaying.value = false;
+  highlightTimeouts.forEach((id) => clearTimeout(id));
+  highlightTimeouts = [];
   clearHighlight();
 }
 
 function play() {
   if (!audio.value) return;
   isPlaying.value = true;
+  const startHighlights = () => {
+    highlightTimeouts = timings.value.map((t, idx) =>
+      setTimeout(() => {
+        const wordId = `word-${wordOffset.value + idx + 1}`;
+        currentWordId.value = wordId;
+        const el = document.querySelector(`[data-word-id="${wordId}"]`);
+        currentLineId.value =
+          el?.closest('[data-line-id]')?.getAttribute('data-line-id') || null;
+      }, t.startTime * 1000),
+    );
+  };
+
+  if (audio.value.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+    startHighlights();
+  } else {
+    audio.value.addEventListener('playing', startHighlights, { once: true });
+  }
+
   audio.value.play();
-  timings.value.forEach((t, idx) => {
-    setTimeout(() => {
-      const wordId = `word-${wordOffset.value + idx + 1}`;
-      currentWordId.value = wordId;
-      const el = document.querySelector(`[data-word-id="${wordId}"]`);
-      currentLineId.value =
-        el?.closest('[data-line-id]')?.getAttribute('data-line-id') || null;
-    }, t.startTime * 1000);
-  });
   audio.value.onended = stop;
 }
 
