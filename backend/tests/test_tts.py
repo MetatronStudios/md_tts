@@ -1,6 +1,7 @@
 import base64
 import os
 import sys
+from io import StringIO
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -38,3 +39,31 @@ def test_tts_piper_unavailable(monkeypatch):
     resp = client.post("/api/tts", json={"text": "hi"})
     assert resp.status_code == 503
     assert resp.headers.get("X-Piper-Error") == "piper missing"
+
+
+class DummyBrokenProcess:
+    def __init__(self) -> None:
+        self.stdin = self
+        self.stdout = self
+        self.stderr = StringIO("boom")
+
+    def poll(self):
+        return None
+
+    def write(self, _data: str) -> None:
+        raise BrokenPipeError
+
+    def flush(self) -> None:  # pragma: no cover - dummy method
+        pass
+
+    def readline(self) -> str:  # pragma: no cover - dummy method
+        return ""
+
+
+def test_tts_broken_pipe(monkeypatch):
+    monkeypatch.setattr(tts, "process", DummyBrokenProcess())
+
+    client = app.test_client()
+    resp = client.post("/api/tts", json={"text": "hello"})
+    assert resp.status_code == 503
+    assert resp.headers.get("X-Piper-Error").startswith("Piper pipe broken")
