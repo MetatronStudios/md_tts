@@ -40,19 +40,19 @@ Play the resulting `test.wav` to ensure audio was generated.
 ## 4. Configure `PiperWrapper`
 
 `PiperWrapper` looks for the `piper` executable in your `PATH`. If it is located
-elsewhere, pass the full path when constructing the wrapper in `app.py`:
+elsewhere, pass the full path when constructing the wrapper in `app.py` along
+with the model and config paths:
 
 ```python
 from piper_wrapper import PiperWrapper
 
-# tts = PiperWrapper('/opt/piper/piper', 'en_US-amy-medium')
+# tts = PiperWrapper('/opt/piper/piper', 'en_US-amy-medium.onnx',
+#                    'en_US-amy-medium.onnx.json')
 ```
-
-You can also specify the `--voice` argument to set a default voice.
 
 ## Troubleshooting
 
 - **piper: command not found** — ensure the binary directory is in your `PATH`.
-- **No such file or directory for voice** — check the paths to your `.onnx` and `.onnx.json` files.
+- **No such file or directory for model/config** — check the paths to your `.onnx` and `.onnx.json` files.
 - **Silent output** — verify that the voice files are compatible with your
   Piper version.

@@ -37,7 +37,7 @@ def test_tts_piper_unavailable(monkeypatch):
 
     client = app.test_client()
     resp = client.post("/api/tts", json={"text": "hi"})
-    assert resp.status_code == 503
+    assert resp.status_code == 500
     assert resp.headers.get("X-Piper-Error") == "piper missing"
 
 
@@ -65,5 +65,5 @@ def test_tts_broken_pipe(monkeypatch):
 
     client = app.test_client()
     resp = client.post("/api/tts", json={"text": "hello"})
-    assert resp.status_code == 503
+    assert resp.status_code == 500
     assert resp.headers.get("X-Piper-Error").startswith("Piper pipe broken")

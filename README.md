@@ -50,8 +50,8 @@ Vite will use the appropriate file based on the build mode.
 
 ### Installing Piper TTS
 
-The backend requires the `piper` executable and a voice model. See
-`backend/INSTALL.md` for setup instructions.
+The backend requires the `piper` executable along with a model file and its
+matching `.onnx.json` config. See `backend/INSTALL.md` for setup instructions.
 
 ## Testing
 
