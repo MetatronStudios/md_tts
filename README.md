@@ -36,6 +36,9 @@ Both servers will run locally and communicate via HTTP APIs.
 When Piper is unavailable, the backend returns a `503` status from `/api/tts`
 and includes an `X-Piper-Error` header describing the problem.
 
+Playback highlighting now waits for the audio element's `playing` event,
+ensuring that the marked word stays in sync with spoken audio.
+
 ### Environment Variables
 
 The frontend expects an environment variable `VITE_API_URL` pointing to the back-end API.

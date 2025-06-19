@@ -26,7 +26,8 @@ def tts_endpoint():
     try:
         result = tts.synthesize(text)
     except RuntimeError as exc:  # Piper-related error
-        sanitized_error = str(exc).replace("\n", " ")  # Remove newline characters
+        # Remove newline characters to avoid header injection
+        sanitized_error = str(exc).replace("\n", " ")
         resp = jsonify({"error": sanitized_error})
         resp.status_code = 500
         resp.headers["X-Piper-Error"] = sanitized_error
