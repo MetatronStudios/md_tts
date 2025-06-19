@@ -18,6 +18,8 @@ class PiperWrapper:
         if voice:
             cmd.extend(["--voice", voice])
 
+        print(f"Executing Piper command: {cmd}", flush=True)
+
         if shutil.which(executable):
             self.process = subprocess.Popen(
                 cmd,

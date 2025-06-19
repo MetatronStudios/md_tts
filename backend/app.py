@@ -22,9 +22,10 @@ def tts_endpoint():
     try:
         result = tts.synthesize(text)
     except RuntimeError as exc:  # Piper-related error
-        resp = jsonify({"error": str(exc)})
-        resp.status_code = 503
-        resp.headers["X-Piper-Error"] = str(exc)
+        sanitized_error = str(exc).replace("\n", " ")  # Remove newline characters
+        resp = jsonify({"error": sanitized_error})
+        resp.status_code = 500
+        resp.headers["X-Piper-Error"] = sanitized_error
         return resp
     except Exception as exc:  # pylint: disable=broad-except
         return jsonify({"error": str(exc)}), 500
