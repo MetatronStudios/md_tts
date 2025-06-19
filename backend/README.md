@@ -7,8 +7,8 @@ It relies on a local installation of [Piper TTS](https://github.com/rhasspy/pipe
 
 1. Download a Piper release for your platform and place the `piper` binary on
    your `PATH`.
-2. Download a voice model (`.onnx` and `.onnx.json`) and keep both files
-   together in a directory.
+2. Download a voice model (`.onnx`) and its matching config (`.onnx.json`)
+   and keep both files together in a directory.
 3. Test the installation:
 
    ```bash
@@ -16,6 +16,6 @@ It relies on a local installation of [Piper TTS](https://github.com/rhasspy/pipe
    ```
 
 4. If `piper` is not on your `PATH`, pass the full path when constructing
-   `PiperWrapper` in `app.py`.
+   `PiperWrapper` in `app.py` along with the model and config paths.
 
 See [INSTALL.md](INSTALL.md) for detailed instructions and troubleshooting tips.

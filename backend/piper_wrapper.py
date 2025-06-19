@@ -11,12 +11,18 @@ class PiperWrapper:
     """Manage a Piper TTS subprocess."""
 
     def __init__(
-        self, executable: str = "piper", voice: str | None = None
-    ) -> None:  # noqa: E501
+        self,
+        executable: str = "piper",
+        model: str | None = None,
+        config: str | None = None,
+    ) -> None:
         self.executable = executable
         cmd = [executable]
-        if voice:
-            cmd.extend(["--voice", voice])
+        if model:
+            cmd.extend(["--model", model])
+        if config:
+            cmd.extend(["--config", config])
+        cmd.append("--json-input")
 
         print(f"Executing Piper command: {cmd}", flush=True)
 
@@ -42,13 +48,13 @@ class PiperWrapper:
         if not self.process.stdin or not self.process.stdout:
             raise RuntimeError("Piper process not started correctly")
 
-        # Piper expects a JSON line with text and a temporary output path
+        # Piper expects a JSON line with text and an output WAV path
         with tempfile.TemporaryDirectory() as tmpdir:
             out_wav = Path(tmpdir) / "output.wav"
             timings_path = Path(tmpdir) / "timings.json"
 
             request = json.dumps(
-                {"text": text, "output_path": str(out_wav)}
+                {"text": text, "output_file": str(out_wav)}
             )  # noqa: E501
             try:
                 self.process.stdin.write(request + "\n")
@@ -61,7 +67,7 @@ class PiperWrapper:
                     f"Piper pipe broken: {stderr.strip()}"
                 ) from exc  # noqa: E501
 
-            # Read response JSON from Piper
+            # Read response from Piper (output path or error message)
             try:
                 response_line = self.process.stdout.readline()
             except BrokenPipeError as exc:
@@ -76,10 +82,10 @@ class PiperWrapper:
                     self.process.stderr.read() if self.process.stderr else ""
                 )  # noqa: E501
                 raise RuntimeError(f"Piper failed: {stderr}")
-            resp = json.loads(response_line)
 
-            if resp.get("status") != "ok":
-                raise RuntimeError(f"Piper error: {resp}")
+            resp_path = response_line.strip()
+            if resp_path and not Path(resp_path).exists():
+                raise RuntimeError(f"Piper error: {resp_path}")
 
             if timings_path.exists():
                 timings = json.loads(timings_path.read_text())

@@ -5,7 +5,11 @@ from piper_wrapper import PiperWrapper
 
 app = Flask(__name__)
 CORS(app)
-tts = PiperWrapper("/opt/piper/piper", "en_US-amy-medium")
+tts = PiperWrapper(
+    "/opt/piper/piper",
+    "en_US-amy-medium.onnx",
+    "en_US-amy-medium.onnx.json",
+)
 
 
 @app.route("/")
