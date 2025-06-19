@@ -34,6 +34,9 @@ class PiperWrapper:
         if self.process is None:
             # Piper is not installed or failed to start
             raise RuntimeError(self._get_error_message())
+        if self.process.poll() is not None:
+            stderr = self.process.stderr.read() if self.process.stderr else ""
+            raise RuntimeError(f"Piper terminated: {stderr.strip()}")
         if not self.process.stdin or not self.process.stdout:
             raise RuntimeError("Piper process not started correctly")
 
@@ -45,11 +48,27 @@ class PiperWrapper:
             request = json.dumps(
                 {"text": text, "output_path": str(out_wav)}
             )  # noqa: E501
-            self.process.stdin.write(request + "\n")
-            self.process.stdin.flush()
+            try:
+                self.process.stdin.write(request + "\n")
+                self.process.stdin.flush()
+            except BrokenPipeError as exc:
+                stderr = (
+                    self.process.stderr.read() if self.process.stderr else ""
+                )  # noqa: E501
+                raise RuntimeError(
+                    f"Piper pipe broken: {stderr.strip()}"
+                ) from exc  # noqa: E501
 
             # Read response JSON from Piper
-            response_line = self.process.stdout.readline()
+            try:
+                response_line = self.process.stdout.readline()
+            except BrokenPipeError as exc:
+                stderr = (
+                    self.process.stderr.read() if self.process.stderr else ""
+                )  # noqa: E501
+                raise RuntimeError(
+                    f"Piper pipe broken: {stderr.strip()}"
+                ) from exc  # noqa: E501
             if not response_line:
                 stderr = (
                     self.process.stderr.read() if self.process.stderr else ""
