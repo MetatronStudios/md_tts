@@ -13,6 +13,7 @@ def test_tts_endpoint():
     client = app.test_client()
     resp = client.post("/api/tts", json={"text": "hello world"})
     assert resp.status_code == 200
+    assert resp.headers.get("Access-Control-Allow-Origin") == "*"
     data = resp.get_json()
     assert "audioContent" in data
     assert "mimeType" in data and data["mimeType"] == "audio/wav"
