@@ -33,6 +33,9 @@ This project provides a basic setup for a Vue.js frontend and Flask backend.
 
 Both servers will run locally and communicate via HTTP APIs.
 
+When Piper is unavailable, the backend returns a `503` status from `/api/tts`
+and includes an `X-Piper-Error` header describing the problem.
+
 ### Environment Variables
 
 The frontend expects an environment variable `VITE_API_URL` pointing to the back-end API.

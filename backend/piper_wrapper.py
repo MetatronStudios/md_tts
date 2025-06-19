@@ -13,6 +13,7 @@ class PiperWrapper:
     def __init__(
         self, executable: str = "piper", voice: str | None = None
     ) -> None:  # noqa: E501
+        self.executable = executable
         cmd = [executable]
         if voice:
             cmd.extend(["--voice", voice])
@@ -31,8 +32,8 @@ class PiperWrapper:
 
     def synthesize(self, text: str) -> Dict[str, object]:
         if self.process is None:
-            # Generate silent placeholder audio when Piper is unavailable
-            return self._fake_response(text)
+            # Piper is not installed or failed to start
+            raise RuntimeError(self._get_error_message())
         if not self.process.stdin or not self.process.stdout:
             raise RuntimeError("Piper process not started correctly")
 
@@ -112,6 +113,21 @@ class PiperWrapper:
             "mimeType": "audio/wav",
             "timings": timings,
         }  # noqa: E501
+
+    def _get_error_message(self) -> str:
+        """Return an informative error message when Piper is unavailable."""
+        try:
+            result = subprocess.run(
+                [self.executable, "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+            )
+            msg = result.stderr.strip() or result.stdout.strip()
+            return msg or "Piper executable not found"
+        except OSError as exc:  # FileNotFoundError or similar
+            return str(exc)
 
     def terminate(self) -> None:
         if self.process.poll() is None:
